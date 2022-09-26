@@ -1,0 +1,29 @@
+<%- include('partials/header'); -%>
+
+  <% companies.forEach((e)=>{ %>
+    <div class="smoothie">
+      <ul>
+          <img src=<%-e.profilePic%>>
+          <br>    
+          <h3>Name: <%= e.name %></h3>
+          <br>
+          <h3>Email: <%= e.email %></h3>
+          <br>
+          <h3>Category: <%= e.category %></h3>   
+          <br>    
+          <div>
+            <!-- <li><button onClick="manage(this)" name="accept" data-arg1 = <%- e._id %>>Manage</button></li> -->
+            <a href= "company/<%- e.id %>" class="btn">Manage</a>
+            <!-- <li><button onclick="reject(this)" name="reject" data-arg1 = <%- e.id %>>Reject</button></li>  -->
+          </div>
+      </ul>
+    </div>
+  
+    <hr>
+  <br>
+  <% }) %>
+
+
+<%- include('partials/footer'); -%>
+
+

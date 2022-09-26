@@ -1,0 +1,23 @@
+<%- include('partials/header'); -%>
+
+<h1>Nft Minted successfully!!</h1>
+<br>
+<br>
+<br>
+<% let str = "http://cloudflare-" +  "ipfs.com/ipfs/" + details.image + "/"; console.log(str); %>
+
+<img src= <%- str %> alt= <%- str %>>
+<br>
+<br>
+<h4>Name: <%= details.name %></h4>  
+<br>
+<h4>Description: <%= details.description %></h4>
+<br>
+<h4>Cap: <%= details.cap%></h4>
+<br>
+<h4>Perks: <%= details.perks%></h4>
+<br>
+<% var str1 = "https://polygonscan.com/address/" + details.contract ; %>
+<h4>Polyscan link: <a href= <%= str1 %>><%= str1 %></a></h4>
+
+<%- include('partials/footer'); -%>

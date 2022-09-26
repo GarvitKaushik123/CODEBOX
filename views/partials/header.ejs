@@ -1,0 +1,23 @@
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Codebox</title>
+  <link rel="stylesheet" href="/styles.css">
+
+</head>
+<body>
+  <nav>
+    <h1><a href="/">Codebox</a></h1>
+    <ul> 
+      <% if  (user) { %>
+      <li>Welcome <%= user.email %></li>
+      <li><a href="/logout">Logout</a></li>
+      <% } else { %>
+      <li><a href="/admin" class="btn">Admin Panel</a></li>
+      <!-- <li><a href="/login" class="btn">Log in</a></li>
+      <li><a href="/signup" class="btn">sign up</a></li> -->
+      <% } %>
+    </ul>
+  </nav>
+  

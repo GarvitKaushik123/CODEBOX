@@ -1,0 +1,12 @@
+<%- include('partials/header'); -%>
+
+<header>
+    <div class="headings">
+      <h2><%= company.name %></h2> 
+      <a href="/edit_coverImage/<%-company._id%>" class="btn">Edit cover Image</a>
+      <a href="/edit_tagline/<%-company._id%>" class="btn">Edit tagline</a>
+    </div>
+</header>
+
+
+<%- include('partials/footer'); -%>

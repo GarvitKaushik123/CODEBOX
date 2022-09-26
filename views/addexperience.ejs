@@ -1,0 +1,73 @@
+<%- include('partials/header'); -%>
+<link rel="stylesheet" href="/styles_home.css">
+
+<body>
+ 
+   
+      <form class="login-form">
+        <label for="name">Name</label>
+        <input type="text" name= "name" placeholder="Name"/>
+        <label for="coverImage">Cover Image</label>
+        <input type="file" name="coverImage" required>
+        <div class="coverImage error"></div>
+        <label for="branch">Branch</label>
+        <input type = "text" name= "branch" placeholder="Branch"/>
+        <label for="company">Company</label>
+        <input type = "text" name= "company" placeholder="Company"/>
+        <label for="experience">Experience</label>
+        <input type = "text" name= "experience" placeholder="Experience"/>
+
+        <button>Add</button>
+      </form>
+  
+
+<%- include('partials/footer'); -%>
+
+
+<script>
+    async function toDataUrl(e) {
+    return new Promise((resolve, reject) => {
+            var reader = new FileReader();
+            reader.onloadend = function () {
+                resolve(reader.result);
+            };
+            reader.readAsDataURL(e);
+    });
+    }
+    const form = document.querySelector('.login-form');
+  const coverImageError = document.querySelector('.coverImage.error');
+
+  
+    form.addEventListener('submit', async (e) => {
+      e.preventDefault();
+  
+      coverImageError.textContent = '';
+      // get values
+      const name = form.name.value;
+      var coverImage = form.coverImage.files[0];
+      coverImage = await toDataUrl(coverImage);
+      const branch = form.branch.value;
+      const company = form.company.value;
+      const exp = form.experience.value;      
+  
+      try {
+        const res = await fetch('/addexperience', {
+          method: 'POST',
+          body: JSON.stringify({ name, coverImage , branch , company , exp }),
+          headers: {'Content-Type': 'application/json'} 
+        });
+       if(res){
+         console.log('question added');
+         location.reload();
+       }else{
+         console.log('question NOT added');
+          location.reload();
+       } 
+       
+      }
+      catch (err) {
+        console.log(err);
+      }
+    });
+  </script>
+  

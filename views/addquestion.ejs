@@ -1,0 +1,54 @@
+<%- include('partials/header'); -%>
+<link rel="stylesheet" href="/styles_home.css">
+
+<body>
+   
+      <form class="login-form">
+        <label for="name">Name</label>
+        <input type="text" name= "name" placeholder="Question Name"/>
+        <label for="link">Link</label>
+        <input type="password" name ="link" placeholder="Link"/>
+        <label for="topic">Topic</label>
+        <input type = "text" name= "topic" placeholder="Topic"/>
+        <button>Add</button>
+     </form>   
+  
+
+<%- include('partials/footer'); -%>
+
+
+<script>
+    
+    const form = document.querySelector('.login-form');
+    
+  
+    form.addEventListener('submit', async (e) => {
+      e.preventDefault();
+  
+      
+      // get values
+      const name = form.name.value;
+      const link = form.link.value;
+      const topic = form.topic.value;
+      const approved = false;
+      
+  
+      try {
+        const res = await fetch('/addquestion', {
+          method: 'POST',
+          body: JSON.stringify({ name, link , topic ,approved }),
+          headers: {'Content-Type': 'application/json'} 
+        });
+       if(res){
+         console.log('question added');
+       }else{
+         console.log('question NOT added');
+       } 
+       
+      }
+      catch (err) {
+        console.log(err);
+      }
+    });
+  </script>
+  

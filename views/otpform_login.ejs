@@ -1,0 +1,57 @@
+<%- include('partials/header'); -%>
+
+<form action="verifyOTP">
+  <h2>Verify OTP</h2>
+  <label for="OTP">OTP</label>
+  <input type="number" name="OTP" required />
+  <div class="OTP error"></div>
+  <button>Verify</button>
+</form>
+
+<%- include('partials/footer'); -%>
+
+<script>
+  const form = document.querySelector('form');
+  const OTPError = document.querySelector('.OTP.error');
+  form.addEventListener('submit', async (e) => {
+    e.preventDefault();
+    // reset errors
+    OTPError.textContent = '';
+    // get values
+    const OTP = form.OTP.value;
+    try {
+        var userId = "<%- userId%>";
+        console.log("please find attached otp");
+        console.log(OTP);
+        console.log(userId);
+      const res = await fetch('/verifyOTP_login', { 
+        method: 'POST', 
+        body: JSON.stringify({ OTP: OTP, userId: userId }),
+        headers: {'Content-Type': 'application/json'}
+      }); 
+
+      
+      const data = await res.json(); 
+      console.log(data);
+      if (data.errors) {
+        if(data.errors.fatal){
+          location.assign('/login');
+        }else{
+          OTPError.textContent = data.errors.otp;
+        }
+      }
+      if (data.user) {
+        // location.reload(true);
+        // location.href('/');
+        location.assign('/');
+        // location.replace('/');
+        // window.open("/");
+
+        // const res = await fetch('/');
+      }
+    }
+    catch (err) {
+      console.log(err);
+    }
+  });
+</script>

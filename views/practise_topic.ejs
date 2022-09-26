@@ -1,0 +1,15 @@
+<%- include('partials/header'); -%>
+<link rel="stylesheet" href="/styles_home.css">
+<link rel="stylesheet" href="/styles_practise.css">
+
+          <h2 style="color:#9bdc28">Problems</h2>
+        <br>
+          <% questions.forEach(function(value){ %>
+            <li>
+                <a href="<%-value.link%>"><h2 class="heading" ><%= value.name%></h2></a>
+            </li>
+            <br>
+         <% }); %> 
+ 
+
+<%- include('partials/footer'); -%>

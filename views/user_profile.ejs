@@ -1,0 +1,21 @@
+<%- include('partials/header'); -%>
+<link rel="stylesheet" href="/styles_profile.css">
+
+    <div class="container mt-4 mb-4 p-3 d-flex justify-content-center"> 
+         <div class=" image d-flex flex-column justify-content-center align-items-center">
+             <button class="btn btn-secondary"> <img src="https://i.imgur.com/wvxPV9S.png" height="100" width="100" /></button>
+              <br> <span class="name mt-3">Name: <%=user.name%></span><br>
+              <span class="idd"></span> <div class="d-flex flex-row justify-content-center align-items-center gap-2"> 
+                <span class="idd1"></span> <span><i class="fa fa-copy"></i></span> 
+            </div> <div class="d-flex flex-row justify-content-center align-items-center mt-3"> 
+                <br>
+                <span class="number"><span class="follow"></span></span> </div> <div class="card p<div class=" d-flex mt-2"> 
+                    <a href="/experience" class="btn1 btn-dark">Read experience</button> <br> <br><a href="/practise" class="btn1 btn-dark">Practise Problems</button> </div> <div class="text mt-3"> 
+                        <span><br><br> </span> </div> 
+                        <div class="gap-3 mt-3 icons d-flex flex-row justify-content-center align-items-center">
+                             <span><i class="fa fa-twitter"></i></span> <span><i class="fa fa-facebook-f"></i></span> 
+                             <span><i class="fa fa-instagram"></i></span> <span><i class="fa fa-linkedin"></i></span> </div> 
+                             <div class=" px-2 rounded mt-4 date "> <span class="join"></span> </div> </div> </div>
+    </div>
+
+<%- include('partials/footer'); -%>

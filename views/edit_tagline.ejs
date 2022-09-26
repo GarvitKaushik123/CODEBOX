@@ -1,0 +1,58 @@
+<%- include('partials/header'); -%>
+
+<header>
+    <form>
+        <h4>Current tagline - <%= company.tagline %>  </h4> 
+        <br>
+        <br>
+        <h3>Edit Tagline</h3>
+        <label for="tagline">Tagline</label>
+        <input type="text" name="tagline" required >
+        <div class="tagline error"></div>
+        <button type="submit">Submit</button>
+      </form>
+      </div>
+
+  </header> 
+<div>
+
+<%- include('partials/footer'); -%>
+
+
+<script>
+  var id = "<%-company._id%>";
+  console.log("<%-company.tagline%>");
+  console.log(id);
+
+  const form = document.querySelector('form');
+  const taglineError = document.querySelector('.tagline.error');
+
+  form.addEventListener('submit', async (e) => {
+    e.preventDefault();
+    // reset errors
+    taglineError.textContent = '';
+    // get values
+    var tagline = form.tagline.value;
+    console.log(tagline);
+
+    try { 
+      const res = await fetch('/edit_tagline',{ 
+        method: 'POST', 
+        body: JSON.stringify({tagline, id}),
+        headers: {'Content-Type': 'application/json'}
+      });
+      const data = await res.json();   
+      console.log(data);     
+      if(data.errors){
+          taglineError.textContent = data.errors.tagline;
+      }
+      if (data.accept) {
+        console.log(data.accept);
+        location.reload();
+      }
+    }
+    catch (err) {
+      console.log(err);
+    }
+  });
+</script>

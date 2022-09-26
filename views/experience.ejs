@@ -1,0 +1,25 @@
+<%- include('partials/header'); -%>
+<link rel="stylesheet" href="/styles_home.css">
+<link rel="stylesheet" href="/styles_experience.css">
+
+        <h2>Learn from seniors experience to get into a big-tech</h2>
+        <br>
+        <br>
+
+  <ul>
+    <% experience.forEach(function(value){ %>
+    <div class="temp">
+    <li>
+      <img src="<%=value.image%>" alt="<%=value.name%>">
+      <p>Name : <%=value.name%></p>
+      <p>Branch : <%=value.branch%> </p>   
+      <p>Company : <%=value.company%></p>
+      <p>Experience : <%= value.exp %></p>
+    </li>
+    </div>
+    <% });%>
+    <br>
+    
+  </ul>
+
+<%- include('partials/footer'); -%>
