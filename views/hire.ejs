@@ -1,0 +1,90 @@
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>CodeBox</title>
+  <link rel="stylesheet" href="/styles.css">
+</head>
+<body>
+  <nav>
+    <h1><a href="/">CodeBox</a></h1>
+  </nav>
+  
+<form action="/hire" method="post" enctype="multipart/form-data">
+  <h2>Hire</h2>
+  <label for="profile">Profile</label>
+  <input type="text" name="profile" />
+  <div class="profile error"></div>
+
+  <label for="poster">Poster</label>
+  <input type="file" name="poster" required>
+  <div class="poster error"></div>
+
+
+  <label for="job_description">Job description</label>
+  <input type="text" name="job_description"/>
+  <div class="job_description error"></div>
+
+  <button type="submit">Submit</button>
+</form> 
+
+<%- include('partials/footer'); -%>
+
+<script>
+  async function toDataUrl(e) {
+    return new Promise((resolve, reject) => {
+            var reader = new FileReader();
+            reader.onloadend = function () {
+                resolve(reader.result);
+            };
+            reader.readAsDataURL(e);
+    });
+}
+  const form = document.querySelector('form');
+  const profileError = document.querySelector('.profile.error');
+  const posterError = document.querySelector('.poster.error');
+  const job_descriptionError = document.querySelector('.job_description.error');
+
+  form.addEventListener('submit', async (e) => {
+    e.preventDefault();
+    // reset errors
+    profileError.textContent = '';
+    posterError.textContent = '';
+    job_descriptionError.textContent = '';
+
+    // get values
+    var profile = form.profile.value;
+    var poster = form.poster.files[0];
+    var job_description = form.job_description.value;
+    poster = await toDataUrl(poster);
+    try {
+      const res = await fetch('/hire', { 
+        method: "POST", 
+        body: JSON.stringify({profile, poster, job_description}),
+        headers: {'Content-Type': 'application/json'}
+      });  
+      const data = await res.json(); 
+      console.log(data);
+      if (data.errors) {
+        console.log(data.errors);
+        profileError.textContent = data.errors.profile;
+        posterError.textContent = data.errors.poster;
+        job_descriptionError.textContent = data.errors.job_description; 
+      }
+      if (data.details) {
+        console.log(data.details);
+        var detail = { profile: data.details.profile, job_description: data.details.job_description};
+        console.log('ss');
+        console.log(detail);
+        var jdetail = JSON.stringify(detail);
+        console.log(jdetail);
+        location.assign(`/company_hire_screen/${jdetail}`);
+      }
+    }
+    catch (err) { 
+      console.log(err);
+    }
+  });
+
+</script>
+

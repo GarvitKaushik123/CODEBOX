@@ -1,14 +1,10 @@
 const { Router } = require('express');
-// import {Router} from "express";
 const authController = require('../controllers/authController');
-// import { login_post, signup_get, signup_post, login_get} from "../controllers/authController.js";
 const {requireAuth , checkUser , adminAuth } = require('../middleware/authMiddleware');
 const { formParser } = require('../middleware/parseMiddleware');
 
 const router = Router();
    
-
-// checkuser need to be mentioned here again !!!!
 router.get('/signup', checkUser,authController.signup_get);
 router.post('/signup',authController.signup_post);
 router.get('/login',authController.login_get);
@@ -34,6 +30,9 @@ router.get('/edit_coverImage/:id', requireAuth, checkUser, adminAuth, authContro
 router.post('/edit_coverImage', requireAuth, checkUser, adminAuth, authController.edit_coverImage_post);
 router.get('/edit_tagline/:id', requireAuth, checkUser, adminAuth, authController.edit_tagline_get);
 router.post('/edit_tagline', requireAuth, checkUser, adminAuth, authController.edit_tagline_post);
+router.get('/get_hired', requireAuth, checkUser, authController.get_hired_get);
+router.get('/apply_offer/:id', requireAuth, checkUser, authController.apply_offer_get);
+router.post('/apply_offer', requireAuth, checkUser, authController.apply_offer_post);
+router.get('/application_confirmation', requireAuth, checkUser, authController.application_confirmation_get);
 
 module.exports = router;
-// export default router; 

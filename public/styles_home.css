@@ -44,7 +44,7 @@
 }
 
 .container .card:after{
-  content: 'Nike';
+  content: '';
   position: absolute;
   top: 30%;
   left: -20%;

@@ -1,0 +1,23 @@
+<%- include('partials/header'); -%>
+
+<% offer.forEach((e)=>{ %>
+  <div class="smoothie">
+    <ul>
+        <img src="<%-e.poster%>">
+        <br>
+        <br>
+        <h3>Profile: <%= e.profile %></h3>
+        <br>
+        <h3>Job Description: <%= e.job_description %></h3>
+
+        <div>
+          <li><a href="/apply_offer/<%-e.id%>"><button>Apply</button></a></li>
+        </div>
+    </ul>
+  </div>
+
+  <hr>
+<br>
+<% }) %>
+
+<%- include('partials/footer'); -%>

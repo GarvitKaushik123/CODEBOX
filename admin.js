@@ -1,7 +1,7 @@
 function admins() {
     return [
-        {email : 'hibro@gmail.com'},
-        {email : 'test3@gmail.com' }
+        {email : 'admin@gmail.com'},
+        {email : 'admin1@gmail.com'}
     ]
 }
 

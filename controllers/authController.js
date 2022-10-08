@@ -6,9 +6,11 @@ const Company = require("../models/Company");
 const Question = require('../models/question');
 const Topic = require('../models/topic');
 const Experience = require("../models/experience");
+const Offer = require('../models/Offer.js');
+const Application = require('../models/Application');
+
 
 const jwt = require('jsonwebtoken');
-// import jwt from "jsonwebtoken";
 
 const bcrypt = require('bcrypt');
 
@@ -34,12 +36,6 @@ var  { getStorage, ref, uploadBytes, uploadString, getDownloadURL } = require("f
 const {  getFirestore, collection, addDoc, getDocs, getDoc, doc, deleteDoc } = require("firebase/firestore");
 
 const firebaseConfig = {
-  apiKey: "AIzaSyBbJ2TVOhxxecf5cvbg1vYm_3NYfjbWz68",
-  authDomain: "codebox-63803.firebaseapp.com",
-  projectId: "codebox-63803",
-  storageBucket: "codebox-63803.appspot.com",
-  messagingSenderId: "903557415991",
-  appId: "1:903557415991:web:838531915bea186d0fabb2"
 };
 const app = firebase.initializeApp(firebaseConfig);
 
@@ -48,11 +44,10 @@ const storageRef = ref(storage);
 const { Blob } = require("buffer");
 // Firebase App (the core Firebase SDK) is always required and
 
-
-const { url } = require('inspector');
+// Fireebase Packages end --------------------------------------------------
 const { Collection } = require('mongoose');
 
-// Fireebase Packages end --------------------------------------------------
+// -----------------------------------------mongoose dependency----------
 
 function randomString(length) {
   var result           = '';
@@ -71,16 +66,10 @@ async function isEmailValid(email) {
 
 let transporter = nodemailer.createTransport({
   service: 'hotmail',
-  // host: "",
-  // port: 465,
-  // secure: true,
   auth: { 
     user: '',
     pass: '', 
   },
-  // tls: {
-  //   rejectUnauthorized : false
-  // }
 });
 
 
@@ -97,12 +86,10 @@ const handleErrors_Pic = (err) => {
   if(err.message == 'JPG,PNG,JPEG,SVG file only allowed'){
     errors.image = 'JPG,PNG,JPEG,SVG file only allowed';
   }
-  console.log(errors);
   return errors;
 }
  
 const handleErrors = (err) => {
-  console.log(err.message, err.code);
   let errors = { email: '', password: '' };
 
   // // incorrect email
@@ -154,8 +141,6 @@ const handleImageError = async (x) => {
 
 const upload_company_image_to_firebase_storage = async (companyImagesRef, data) =>{
   const snapshot = await uploadBytes(companyImagesRef, data);
-  console.log("ji");
-  console.log(snapshot);
   return snapshot.metadata.fullPath;
 }
 
@@ -191,16 +176,13 @@ const sendOTPVerificationEmail = async (email, _id)=> {
     const res = await newOTPVerification.save();
     await transporter.sendMail(mailOptions, function(error, info){
       if(error){
-        console.log("$$$$$$$$$$$$$$$$");
         console.log(error);
       }else{
         console.log("emailsent");
       }
     });
-    console.log("000000000000000000000000000000");
     console.log(otp);
     console.log(hashedOTP);
-    console.log("000000000000000000000000000000");
     return otp;
 
   } catch (error){
@@ -441,7 +423,6 @@ module.exports.verifyOTP_get = (req, res) => {
   res.render('otpform');
 } 
 
-
 module.exports.admin_get = async (req, res) => {
     res.render('admin_screen');
 }
@@ -451,30 +432,30 @@ module.exports.question_get = (req, res) => {
 } 
 
 module.exports.question_post = async(req,res) => {
+  console.log(req.body.topic);
   var x = await Topic.find({ topic : req.body.topic });
-  var id = x[0]._id;
-  req.body.topic = id;
-  console.log(req.body);
-
-  var data = new Question(req.body);
- data.save()
-  .then(item => {
-    console.log("data is saved");
-  })
- .catch(err => {
-    console.log(err); 
-  })
+  try{
+    var id = x[0]._id;
+    req.body.topic = id;
+    console.log(req.body);
+  
+    var data = new Question(req.body);
+   data.save()
+    .then(item => {
+      console.log("data is saved");
+    })
+   .catch(err => {
+      console.log(err); 
+    })
+  }catch(error){
+    console.log(error);
+  }
 
 }
 
 module.exports.addexperience_get = (req,res) =>{
   res.render('addexperience');
 } 
-
-module.exports.addexperience_get = (req,res) =>{
-    
-  res.render('addexperience');
-}  
 
 module.exports.addexperience_post = async(req,res) => {
   
@@ -627,3 +608,42 @@ module.exports.edit_tagline_post = async (req, res) => {
   }
 }
 
+module.exports.get_hired_get = async (req, res) => {
+  var offer = await Offer.find({});
+  console.log(offer);
+  res.locals.offer = offer;
+  res.render('get_hired');
+}
+
+module.exports.apply_offer_get = (req, res) => {
+  var offer_id = req.params.id;
+  console.log(offer_id);
+  res.locals.offer_id = offer_id;
+  res.render('offer_form');
+}
+
+module.exports.apply_offer_post = async(req, res) => {
+  var {coverImage, reason, offer_id} = req.body;
+  console.log(reason);
+  console.log(offer_id);
+  coverImage = coverImage.split(',')[1]
+  // console.log(coverImage);
+  coverImagePath = 'images/' + 'coverImage' + `${res.locals.user.name}.png`;
+  console.log(coverImagePath);
+  fs.writeFileSync('./' + coverImagePath,coverImage,'base64');
+
+  var coverImage_Ref = ref(storage, coverImagePath);
+  var coverImage_data = new Buffer.from(fs.readFileSync(coverImagePath));
+  await upload_company_image_to_firebase_storage(coverImage_Ref, coverImage_data);
+  var resume = await getDownloadURL(coverImage_Ref); 
+    
+  var temp = await Offer.findById(offer_id);
+  console.log(temp);
+  console.log(res.locals.user);
+  const application = await Application.create({ email: res.locals.user.email , name: res.locals.user.name, image: res.locals.user.image, company_id: temp.company_id, resume: resume, reason: reason});
+  res.status(400).json({ accept: 1 });  
+}
+
+module.exports.application_confirmation_get = (req, res) => {
+  res.render('application_confirmation');
+}

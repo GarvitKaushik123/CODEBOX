@@ -16,11 +16,6 @@ const questionSchema = new Schema({
      ref : 'topics',//not constructors name!
      required : true
   },
-  // approved : {
-  //   type : Boolean,
-  //   default : false
-  // }
-
 });
 
 const Question = mongoose.model('Question', questionSchema);

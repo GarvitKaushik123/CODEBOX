@@ -86,5 +86,4 @@ const adminAuth = (req, res, next) => {
 };
 
 
-// export { requireAuth };
 module.exports = { requireAuth, checkUser, adminAuth};

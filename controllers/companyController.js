@@ -1,10 +1,13 @@
 const tempCompany = require('../models/tempCompany.js');
 const Company = require('../models/Company.js');
+const Offer = require('../models/Offer.js');
+const Application = require('../models/Application.js');
+
 
 const jwt = require('jsonwebtoken');
 
 const fs = require('fs');
-// const multer = require('multer');
+
 const atob = require('atob');
 
 var firebase = require("firebase/app");
@@ -14,7 +17,6 @@ var  { getStorage, ref, uploadBytes, uploadString, getDownloadURL } = require("f
 const {  getFirestore, collection, addDoc, getDocs, getDoc, doc, deleteDoc } = require("firebase/firestore");
 
 const firebaseConfig = {
-
 };
 const app = firebase.initializeApp(firebaseConfig);
 
@@ -30,16 +32,10 @@ const { title } = require('process');
 
 let transporter = nodemailer.createTransport({
     service: 'hotmail',
-    // host: "",
-    // port: 465,
-    // secure: true,
     auth: { 
       user: '',
       pass: '', 
     },
-    // tls: {
-    //   rejectUnauthorized : false
-    // }
   });
 
 const handleImageError = async (x) => {
@@ -75,15 +71,34 @@ const handleErrors = (err) => {
         errors[properties.path] = properties.message;
       });
     }
+    
+    if (err.message.includes('offer validation failed')) {
+      // console.log(err);
+      Object.values(err.errors).forEach(({ properties }) => {
+        errors[properties.path] = properties.message;
+      });
+    }
 
     if(err.message == 'JPG,PNG,JPEG,SVG file only allowed'){
       errors.coverImage = 'JPG,PNG,JPEG,SVG file only allowed';
-      // errors.coverPic = 'JPG,PNG,JPEG,SVG file only allowed';
-      errors.profilePic = 'JPG,PNG,JPEG,SVG file only allowed';
     }
   
     return errors;
   }
+
+  const handleErrors_hire = (err) => {
+    console.log(err.message, err.code);
+    let errors = {profile:'', poster:'', job_description: ''};
+
+    if (err.message.includes('offer validation failed')) {
+      Object.values(err.errors).forEach(({ properties }) => {
+        errors[properties.path] = properties.message;
+      });
+    }
+  
+    return errors;
+  }
+
 
 const maxAge = 3 * 24 * 60 * 60;
 const createToken = (id) => {
@@ -94,17 +109,13 @@ const createToken = (id) => {
   
 
 const upload_company_image_to_firebase_storage = async (companyImagesRef, data) =>{
-    // const metadata = {
-    //   contentType: 'image/png',
-    // };
     const snapshot = await uploadBytes(companyImagesRef, data);
     console.log(snapshot);
     return snapshot.metadata.fullPath;
  }
 
 const upload_tempcompany_to_mongodb = async (name, email, password, tagline, startPrice,  coverImage_path_storage, profilePic_path_storage, category) => {
-    // const colRef = collection(db, 'temp_company');
-       try{ 
+      try{ 
         const tempcompany = await tempCompany.create({name, email, password, tagline, startPrice, coverImage: coverImage_path_storage, profilePic: profilePic_path_storage, likes: 0, posts: 0, category});
         return {name, email};
       }catch(error){
@@ -167,7 +178,6 @@ module.exports.signup_company_post = async(req, res) => {
     await handleImageError(coverImage.split(',')[0]);
 
     coverImage = coverImage.split(',')[1]
-    // console.log(coverImage);
     coverImagePath = 'images/' + 'coverImage' + `${name}.png`;
     console.log(coverImagePath);
     fs.writeFileSync('./' + coverImagePath,coverImage,'base64');
@@ -296,3 +306,64 @@ module.exports.logout_company_get = (req, res) => {
   res.redirect('/');
 }
 
+module.exports.hire_get = (req, res) => {
+  console.log("hello");
+  res.render('hire');
+}
+
+module.exports.hire_post = async (req, res) => {
+  console.log("hello deve");
+  console.log(res.locals.company);
+  company = res.locals.company;
+  var {profile, poster, job_description} = req.body;
+try{
+  // need to check in company collection for images
+  poster = poster.split(',')[1]
+  posterPath = 'images/' + 'poster' + `${profile}.png`;
+  console.log(posterPath);
+  fs.writeFileSync('./' + posterPath,poster,'base64');
+
+      var poster_Ref = ref(storage, posterPath);
+      var poster_data = new Buffer.from(fs.readFileSync(posterPath));
+      await upload_company_image_to_firebase_storage(poster_Ref, poster_data);
+      var posterUrl = await getDownloadURL(poster_Ref); 
+
+      var object = {
+        profile: profile,
+        poster: posterUrl,
+        job_description: job_description,
+        company_id: company._id
+      }
+      var offer = await Offer.create(object);
+      res.status(200).json({details: offer});
+}catch(error){
+  var errors = handleErrors_hire(error);
+  console.log(errors);
+  res.status(400).json({ errors });  
+}
+
+}
+
+module.exports.company_hire_screen_get = (req, res) => {
+  var detail = req.params.details;
+  console.log(detail);
+  var details = JSON.parse(detail);
+  console.log("####################################");
+  console.log(details);
+  res.locals.details = details;
+  res.render('company_hire_screen');
+}
+
+module.exports.review_applicants_get = async(req, res) => {
+  console.log(res.locals.company._id);
+  var x = await Application.find({ company_id : res.locals.company._id });
+  console.log(x);
+  res.locals.applicants = x;
+  res.render('review_applicants');
+}
+
+module.exports.reject_applicant_post = async(req, res) => {
+  var {id} = req.body;
+  const deleteddoc = await Application.deleteOne({_id: id});
+  res.status(200).json({accept:1});
+}

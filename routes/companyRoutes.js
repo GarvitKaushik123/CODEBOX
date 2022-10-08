@@ -18,5 +18,10 @@ router.get('/login_company', companyController.login_company_get);
 router.post('/login_company', companyController.login_company_post);
 router.get('/company_home', requireCompanyAuth, checkCompany, companyController.company_home_get);
 router.get('/logout_company', companyController.logout_company_get);
- 
+router.get('/hire', requireCompanyAuth, checkCompany, companyController.hire_get); 
+router.post('/hire', requireCompanyAuth, checkCompany, companyController.hire_post); 
+router.get('/company_hire_screen/:details', requireCompanyAuth, checkCompany,companyController.company_hire_screen_get);
+router.get('/review_applicants', requireCompanyAuth, checkCompany, companyController.review_applicants_get);
+router.post('/reject_applicant', requireCompanyAuth, checkCompany, companyController.reject_applicant_post);
+
 module.exports = router;
